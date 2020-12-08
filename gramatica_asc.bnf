@@ -1,6 +1,9 @@
 
-<datatype> ::=  id
-            | id.id
+<expresion> ::= <datatype>
+            | <expComp>
+            | <expBool>
+
+<datatype> ::=  <colName>
             | <literal>
             | <funcCall>
             | <datatype> '+' <datatype>
@@ -41,12 +44,44 @@
             | <datatype> IS UNKNOWN
             | <datatype> IS NOT UNKNOWN
 
+<expSubq> ::= <datatype> '<'  <subqValues> '(' <selectStmt> ')'
+            | <datatype> '>'  <subqValues> '(' <selectStmt> ')'
+            | <datatype> '>=' <subqValues> '(' <selectStmt> ')'
+            | <datatype> '<=' <subqValues> '(' <selectStmt> ')'
+            | <datatype> '='  <subqValues> '(' <selectStmt> ')'
+            | <datatype> '!=' <subqValues> '(' <selectStmt> ')'
+            | <datatype> '<>' <subqValues> '(' <selectStmt> ')'
+            | <datatype> BETWEEN <datatype> AND <datatype> <subqValues> '(' <selectStmt> ')'
+            | <datatype> NOT BETWEEN <datatype> AND <datatype> <subqValues> '(' <selectStmt> ')'
+            | <datatype> BETWEEN SYMMETRIC <datatype> AND <datatype> <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS DISTINCT FFROM <datatype> <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NOT DISTINCT FROM <datatype> <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NULL <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NOT NULL <subqValues> '(' <selectStmt> ')'
+            | <datatype> ISNULL <subqValues> '(' <selectStmt> ')'
+            | <datatype> NOTNULL <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS TRUE <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NOT TRUE <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS FALSE <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NOT FALSE <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS UNKNOWN <subqValues> '(' <selectStmt> ')'
+            | <datatype> IS NOT UNKNOWN <subqValues> '(' <selectStmt> ')'
+
+<subqValues> ::= ALL
+                | ANY
+                | SOME
+
 <boolean> ::= <expComp>
             | litBool
+            | EXISTS '(' <selectStmt> ')'
+            | <datatype> IN '(' <selectStmt> ')'
+            | <datatype> NOT IN '(' <selectStmt> ')'
+            | <expSubq>
 
-<expBool> ::= <boolean> AND <boolean>
-            | <boolean> OR <boolean>
-            | NOT <boolean>
+<expBool> ::= <expBool> AND <boolean>
+            | <expBool> OR <boolean>
+            | NOT <expBool>
+            | <boolean>
 
 <literal> ::= litBool
             | litString
@@ -60,3 +95,75 @@
 <paramList> ::= <paramList> ',' <datatype>
             | <datatype>
 
+<stmt> ::= <selectStmt>
+
+<selectStmt> ::= SELECT <selectParams> FROM <tableExp> <joinList> <whereCl> <groupByCl> <orderByCl> <limitCl>
+            | SELECT DISTINCT <selectParams> FROM <tableExp> <whereCl> <groupByCl>
+
+<selectParams> ::= '*'
+                | <selectList>
+
+<selectList> ::= <selectList> ',' <expresion> 
+            | <expresion>
+
+<tableExp> ::= <tableExp> ',' <fromBody>
+            | <fromBody> 
+
+<colName> ::= id
+            | id.id
+
+<fromBody> ::= <colName>
+            | '(' <selectStmt> ')'
+
+<joinList> ::= <joinList> <joinCl>
+            | <joinCl>
+
+<joinCl> ::= <joinOpt> JOIN <colName> ON <expBool>
+        | <joinOpt> JOIN <colName> USING '(' <nameList> ')'
+        | NATURAL <joinOpt> JOIN <colName>
+        |
+
+<nameList> ::= <nameList> ',' <colName>
+            | <colName>
+
+<joinOpt> ::= INNER
+            | LEFT 
+            | LEFT OUTER
+            | RIGHT
+            | RIGHT OUTER
+            | FULL
+            | FULL OUTER
+
+<whereCl> ::= WHERE <expBool>
+            | /*epsilon*/
+
+<groupByCl> ::= GROUP BY <groupList> <havingCl>
+            | 
+
+<groupList> ::=  <groupList> ',' <colName>
+            | <groupElem>
+
+<havingCl> ::= HAVING <expBool>
+            |
+
+<orderByCl> ::= ORDER BY <orderList>
+
+<orderList> ::= <orderList> ',' <orderByElem>
+            | <orderByElem>
+
+<orderByElem> ::= <colName> <orderOpts> <orderNull>
+
+<orderOpts> ::= ASC
+            | DESC
+            |
+
+<orderNull> ::= NULL FIRST
+            | NULL LAST
+            |
+
+<limitCl> ::= number <offsetLimit>
+            | ALL <offsetLimit>
+            |
+
+<offsetLimit> ::= OFFSET number
+                |
