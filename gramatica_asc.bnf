@@ -1,6 +1,5 @@
 
-<datatype> ::= 
-            | id
+<datatype> ::=  id
             | id.id
             | <literal>
             | <funcCall>
@@ -10,6 +9,13 @@
             | <datatype> '*' <datatype> 
             | <datatype> '%' <datatype>
             | <datatype> '^' <datatype>
+            | <datatype> '||' <datatype>
+            | <datatype> '&' <datatype>
+            | <datatype> '|' <datatype>
+            | <datatype> '#' <datatype>
+            | <datatype> '~' <datatype>
+            | <datatype> '>>' <datatype>
+            | <datatype> '<<' <datatype>
             | '(' <datatype> ')'
 
 <expComp> ::= <datatype> '<' <datatype>
@@ -35,8 +41,22 @@
             | <datatype> IS UNKNOWN
             | <datatype> IS NOT UNKNOWN
 
-
+<boolean> ::= <expComp>
+            | litBool
 
 <expBool> ::= <boolean> AND <boolean>
             | <boolean> OR <boolean>
             | NOT <boolean>
+
+<literal> ::= litBool
+            | litString
+            | litNum
+            | litChar
+
+<funcCall> ::= funcMath '(' <paramList> ')'
+            | funcBool '(' <paramList> ')'
+            | funcTrig '(' <paramList> ')'
+
+<paramList> ::= <paramList> ',' <datatype>
+            | <datatype>
+
