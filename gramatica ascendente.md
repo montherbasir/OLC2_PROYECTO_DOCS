@@ -1,8 +1,7 @@
 # Gramatica ascendente
 
-## Expresiones
-    <datatype> ::= 
-            | id
+## Expresiones:
+<datatype> ::=  id
             | id.id
             | <literal>
             | <funcCall>
@@ -12,9 +11,17 @@
             | <datatype> '*' <datatype> 
             | <datatype> '%' <datatype>
             | <datatype> '^' <datatype>
+            | <datatype> '||' <datatype>
+            | <datatype> '&' <datatype>
+            | <datatype> '|' <datatype>
+            | <datatype> '#' <datatype>
+            | <datatype> '~' <datatype>
+            | <datatype> '>>' <datatype>
+            | <datatype> '<<' <datatype>
             | '(' <datatype> ')'
 
-    <expComp> ::= <datatype> '<' <datatype>
+## Expresiones de comparacion:
+<expComp> ::= <datatype> '<' <datatype>
             | <datatype> '>' <datatype>
             | <datatype> '>=' <datatype>
             | <datatype> '<=' <datatype>
@@ -36,6 +43,29 @@
             | <datatype> IS NOT FALSE
             | <datatype> IS UNKNOWN
             | <datatype> IS NOT UNKNOWN
+
+<boolean> ::= <expComp>
+            | litBool
+
+## Expresiones booleanas:
+<expBool> ::= <boolean> AND <boolean>
+            | <boolean> OR <boolean>
+            | NOT <boolean>
+
+## Literales:
+<literal> ::= litBool
+            | litString
+            | litNum
+            | litChar
+
+## llamada a funcion:
+<funcCall> ::= funcMath '(' <paramList> ')'
+            | funcBool '(' <paramList> ')'
+            | funcTrig '(' <paramList> ')'
+
+<paramList> ::= <paramList> ',' <datatype>
+            | <datatype>
+
 
     
 
