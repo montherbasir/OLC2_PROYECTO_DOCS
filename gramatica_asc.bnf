@@ -105,18 +105,33 @@
 
 <stmt> ::= <selectStmt>
         | <createStmt>
+        | <showStmt>
+        | <alterStmt>
+        | <dropStmt>
+
 
 <selectStmt> ::= SELECT <selectParams> FROM <tableExp> <joinList> <whereCl> <groupByCl> <orderByCl> <limitCl>
             | SELECT DISTINCT <selectParams> FROM <tableExp> <whereCl> <groupByCl>
+            | <selectStmt> UNION <allOpt> <selectStmt>
+            | <selectStmt> INTERSECT <allOpt> <selectStmt>
+            | <selectStmt> EXCEPT <allOpt> <selectStmt>
+            | '(' <selectStmt> ')'
+
+<allOpt> ::= ALL
+            |
 
 <selectParams> ::= '*'
                 | <selectList>
 
-<selectList> ::= <selectList> ',' <expresion> 
-            | <expresion>
+<selectList> ::= <selectList> ',' <expresion> <optAlias>
+            | <expresion> <optAlias>
 
-<tableExp> ::= <tableExp> ',' <fromBody>
-            | <fromBody> 
+<optAlias> ::= AS id
+            | id
+            |
+
+<tableExp> ::= <tableExp> ',' <fromBody> <optAlias>
+            | <fromBody> <optAlias>
 
 <colName> ::= id
             | id.id
@@ -244,3 +259,37 @@
              | MODE '=' number
              |
 
+<showStmt> ::= SHOW DATABASES <likeOpt>
+
+<likeOpt> ::= LIKE regex
+            |
+
+<alterStmt> ::= ALTER DATABASE id <alterDb>
+            | ALTER TABLE id <alterTable>
+
+<alterDb> ::= RENAME TO id
+            | OWNER TO <ownerOPts>
+
+<ownerOPts> ::= id
+            | CURRENT_USER
+            | SESSION_USER
+
+<alterTable> ::= ADD <alterConstraint>
+            | <alterCol>
+            | DROP CONSTRAINT id
+            | DROP COLUMN id
+            | RENAME COLUMN id TO id
+
+<alterConstraint> ::= CHECK '(' <expBoolCheck> ')'
+                    | CONSTRAINT id UNIQUE '(' id ')'
+                    | <createForeign>
+                    | COLUMN id id
+
+<alterCol> ::= ALTER COLUMN id SET NOT NULL
+            | ALTER COLUMN id SET NULL
+
+<dropStmt> ::= DROP TABLE id
+            | DROP DATABASE <ifExists> id
+
+<ifExists> ::= IF EXISTS 
+            |
