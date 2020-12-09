@@ -232,6 +232,10 @@
 <constraintOpt> ::= <constrName> UNIQUE
                 | <constrName> CHECK '(' <expBoolCheck> ')'
 
+<primaryOpt> ::= PRIMARY KEY
+
+<referencesOpt> ::= REFERENCES id
+
 <createOwner> ::= OWNER id
                 | OWNER '=' id
                 |
