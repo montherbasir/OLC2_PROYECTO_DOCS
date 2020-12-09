@@ -66,6 +66,10 @@
             | <datatype> IS NOT FALSE <subqValues> '(' <selectStmt> ')'
             | <datatype> IS UNKNOWN <subqValues> '(' <selectStmt> ')'
             | <datatype> IS NOT UNKNOWN <subqValues> '(' <selectStmt> ')'
+            | <stringExp> LIKE pattern 
+
+<stringExp> ::= stringLit
+        | <colName>
 
 <subqValues> ::= ALL
                 | ANY
@@ -296,3 +300,21 @@
 
 <ifExists> ::= IF EXISTS 
             |
+
+<insertStmt> ::= INSERT INTO id VALUES '(' <paramList> ')'
+
+<updateStmt> ::= UPDATE id <optAlias> SET <updateCols> '=' <updateVals> <whereCl>
+
+<updateCols> ::= id
+                | '(' <idList> ')'
+
+<updateVals> ::= <updateExp>
+                | '(' <updateList> ')'
+
+<updateList> ::= <updateList> ',' <updateExp>
+                | <updateExp>
+
+<updateExp> ::= <datatype>
+                | DEFAULT
+
+<deleteStmt> ::= DELETE FROM id <optAlias> <whereCl>
