@@ -96,6 +96,7 @@
             | <datatype>
 
 <stmt> ::= <selectStmt>
+        | <createStmt>
 
 <selectStmt> ::= SELECT <selectParams> FROM <tableExp> <joinList> <whereCl> <groupByCl> <orderByCl> <limitCl>
             | SELECT DISTINCT <selectParams> FROM <tableExp> <whereCl> <groupByCl>
@@ -167,3 +168,36 @@
 
 <offsetLimit> ::= OFFSET number
                 |
+
+<createStmt> ::= CREATE <createBody>
+
+<createBody> ::= OR REPLACE <createOpts>
+             | <createOpts>
+
+<createOpts> ::= TABLE <ifNotExists> id '(' <createTableList> ')'
+            | DATABASE <ifNotExists> id <createOwner> <createMode>
+            | TYPE <ifNotExists> id AS ENUM '(' <paramList> ')'
+
+<ifNotExists> ::= IF NOT EXISTS
+                | 
+
+<createTableList> ::= <createTableList> ',' <createTable>
+                    | <createTable>
+
+<createTable> ::= id id <colOptions>
+
+
+<colOptions> ::= <defaultVal>
+            | <nullOpt>
+            | <constraintOpt>
+            |  
+
+<createOwner> ::= OWNER id
+                | OWNER '=' id
+                |
+
+<createMode> ::= MODE number
+             | MODE '=' number
+             |
+
+
