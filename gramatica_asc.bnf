@@ -1,4 +1,17 @@
 
+/*INICIO DE LA GRAMATICA */
+<stmtList> ::= <stmtList> <stmt>
+                | <stmt>
+
+<stmt> ::= <selectStmt> ';'
+        | <createStmt> ';'
+        | <showStmt> ';'
+        | <alterStmt> ';'
+        | <dropStmt> ';'
+        | <insertStmt> ';'
+        | <updateStmt> ';'
+        | <deleteStmt> ';'
+
 <expresion> ::= <datatype>
             | <expComp>
             | <expBool>
@@ -106,13 +119,6 @@
 
 <paramList> ::= <paramList> ',' <datatype>
             | <datatype>
-
-<stmt> ::= <selectStmt>
-        | <createStmt>
-        | <showStmt>
-        | <alterStmt>
-        | <dropStmt>
-
 
 <selectStmt> ::= SELECT <selectParams> FROM <tableExp> <joinList> <whereCl> <groupByCl> <orderByCl> <limitCl>
             | SELECT DISTINCT <selectParams> FROM <tableExp> <whereCl> <groupByCl>
