@@ -83,6 +83,14 @@
             | NOT <expBool>
             | <boolean>
 
+<booleanCheck> ::= <expComp>
+            | litBool
+
+<expBoolCheck> ::= <expBoolCheck> AND <booleanCheck>
+            | <expBoolCheck> OR <booleanCheck>
+            | NOT <expBoolCheck>
+            | <booleanCheck>
+
 <literal> ::= litBool
             | litString
             | litNum
@@ -184,13 +192,45 @@
 <createTableList> ::= <createTableList> ',' <createTable>
                     | <createTable>
 
-<createTable> ::= id id <colOptions>
+<createTable> ::= id id <createOpts>
+                | <createConstraint>
+                | <createUnique>
+                | <createPrimary>
+                | <createForeign>
 
+<createOpts> ::= <colOptionsList>
+            | 
+
+<createConstraint> ::= <constrName> CHECK '(' <expBoolCheck> ')'
+
+<createUnique> ::= UNIQUE '(' <idList> ')'
+
+<idList> ::= <idList> ',' id
+        | id
+
+<createPrimary> ::= PRIMARY KEY '(' <idList> ')'
+
+<createForeign> ::= FOREIGN KEY '(' <idList> ')' REFERENCES id '(' <idList> ')'
+
+<constrName> ::= CONSTRAINT id 
+            |
+
+<colOptionsList> ::= <colOptionsList> <colOptions>
+                | <colOptions>
 
 <colOptions> ::= <defaultVal>
             | <nullOpt>
             | <constraintOpt>
-            |  
+            | <primaryOpt>
+            | <referencesOpt>
+
+<defaultVal> ::= DEFAULT <datatype>
+
+<nullOpt> ::= NOT NULL
+            | NULL
+
+<constraintOpt> ::= <constrName> UNIQUE
+                | <constrName> CHECK '(' <expBoolCheck> ')'
 
 <createOwner> ::= OWNER id
                 | OWNER '=' id
@@ -199,5 +239,4 @@
 <createMode> ::= MODE number
              | MODE '=' number
              |
-
 
