@@ -197,9 +197,12 @@
 <createBody> ::= OR REPLACE <createOpts>
              | <createOpts>
 
-<createOpts> ::= TABLE <ifNotExists> id '(' <createTableList> ')'
+<createOpts> ::= TABLE <ifNotExists> id '(' <createTableList> ')' <inheritsOpt>
             | DATABASE <ifNotExists> id <createOwner> <createMode>
             | TYPE <ifNotExists> id AS ENUM '(' <paramList> ')'
+
+<inheritsOpt> ::= INHERITS '(' id ')'
+                |
 
 <ifNotExists> ::= IF NOT EXISTS
                 | 
