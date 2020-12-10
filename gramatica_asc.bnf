@@ -11,7 +11,10 @@
         | <insertStmt> ';'
         | <updateStmt> ';'
         | <deleteStmt> ';'
+        | <truncateStmt> ';'
+        | <useStmt> ';'
 
+/*Expresiones*/
 <expresion> ::= <datatype>
             | <expComp>
             | <expBool>
@@ -19,6 +22,8 @@
 <datatype> ::=  <colName>
             | <literal>
             | <funcCall>
+            | <extract>
+            | <datePart>
             | <datatype> '+' <datatype>
             | <datatype> '-' <datatype>
             | <datatype> '/' <datatype>
@@ -33,6 +38,24 @@
             | <datatype> '>>' <datatype>
             | <datatype> '<<' <datatype>
             | '(' <datatype> ')'
+
+<funcCall> ::= funcMath '(' <paramList> ')'
+            | funcBool '(' <paramList> ')'
+            | funcTrig '(' <paramList> ')'
+
+<paramList> ::= <paramList> ',' <datatype>
+            | <datatype>
+
+<extract> ::= EXTRACT '(' <optsExtract> FROM TIMESTAMP stringLit ')'
+
+<optsExtract> ::= YEAR
+                | MONTH
+                | DAY
+                | HOUR 
+                | MINUTE
+                | SECOND
+
+<datePart> ::= DATE_PART '(' stringLit ',' INTERVAL stringLit ')'
 
 <expComp> ::= <datatype> '<' <datatype>
             | <datatype> '>' <datatype>
@@ -113,13 +136,108 @@
             | litNum
             | litChar
 
-<funcCall> ::= funcMath '(' <paramList> ')'
-            | funcBool '(' <paramList> ')'
-            | funcTrig '(' <paramList> ')'
+/*DDL*/
+<createStmt> ::= CREATE <createBody>
 
-<paramList> ::= <paramList> ',' <datatype>
-            | <datatype>
+<createBody> ::= OR REPLACE <createOpts>
+             | <createOpts>
 
+<createOpts> ::= TABLE <ifNotExists> id '(' <createTableList> ')' <inheritsOpt>
+            | DATABASE <ifNotExists> id <createOwner> <createMode>
+            | TYPE <ifNotExists> id AS ENUM '(' <paramList> ')'
+
+<inheritsOpt> ::= INHERITS '(' id ')'
+                |
+
+<ifNotExists> ::= IF NOT EXISTS
+                | 
+
+<createTableList> ::= <createTableList> ',' <createTable>
+                    | <createTable>
+
+<createTable> ::= id id <createOpts>
+                | <createConstraint>
+                | <createUnique>
+                | <createPrimary>
+                | <createForeign>
+
+<createOpts> ::= <colOptionsList>
+            | 
+
+<createConstraint> ::= <constrName> CHECK '(' <expBoolCheck> ')'
+
+<createUnique> ::= UNIQUE '(' <idList> ')'
+
+<idList> ::= <idList> ',' id
+        | id
+
+<createPrimary> ::= PRIMARY KEY '(' <idList> ')'
+
+<createForeign> ::= FOREIGN KEY '(' <idList> ')' REFERENCES id '(' <idList> ')'
+
+<constrName> ::= CONSTRAINT id 
+            |
+
+<colOptionsList> ::= <colOptionsList> <colOptions>
+                | <colOptions>
+
+<colOptions> ::= <defaultVal>
+            | <nullOpt>
+            | <constraintOpt>
+            | <primaryOpt>
+            | <referencesOpt>
+
+<defaultVal> ::= DEFAULT <datatype>
+
+<nullOpt> ::= NOT NULL
+            | NULL
+
+<constraintOpt> ::= <constrName> UNIQUE
+                | <constrName> CHECK '(' <expBoolCheck> ')'
+
+<primaryOpt> ::= PRIMARY KEY
+
+<referencesOpt> ::= REFERENCES id
+
+<createOwner> ::= OWNER id
+                | OWNER '=' id
+                |
+
+<createMode> ::= MODE number
+             | MODE '=' number
+             |
+
+<alterStmt> ::= ALTER DATABASE id <alterDb>
+            | ALTER TABLE id <alterTable>
+
+<alterDb> ::= RENAME TO id
+            | OWNER TO <ownerOPts>
+
+<ownerOPts> ::= id
+            | CURRENT_USER
+            | SESSION_USER
+
+<alterTable> ::= ADD <alterConstraint>
+            | <alterCol>
+            | DROP CONSTRAINT id
+            | DROP COLUMN id
+            | RENAME COLUMN id TO id
+
+<alterConstraint> ::= CHECK '(' <expBoolCheck> ')'
+                    | CONSTRAINT id UNIQUE '(' id ')'
+                    | <createForeign>
+                    | COLUMN id id
+
+<alterCol> ::= ALTER COLUMN id SET NOT NULL
+            | ALTER COLUMN id SET NULL
+
+<dropStmt> ::= DROP TABLE id
+            | DROP DATABASE <ifExists> id
+
+<ifExists> ::= IF EXISTS 
+            |
+
+/*DML*/
 <selectStmt> ::= SELECT <selectParams> FROM <tableExp> <joinList> <whereCl> <groupByCl> <orderByCl> <limitCl>
             | SELECT DISTINCT <selectParams> FROM <tableExp> <whereCl> <groupByCl>
             | <selectStmt> UNION <allOpt> <selectStmt>
@@ -202,111 +320,6 @@
 <offsetLimit> ::= OFFSET number
                 |
 
-<createStmt> ::= CREATE <createBody>
-
-<createBody> ::= OR REPLACE <createOpts>
-             | <createOpts>
-
-<createOpts> ::= TABLE <ifNotExists> id '(' <createTableList> ')' <inheritsOpt>
-            | DATABASE <ifNotExists> id <createOwner> <createMode>
-            | TYPE <ifNotExists> id AS ENUM '(' <paramList> ')'
-
-<inheritsOpt> ::= INHERITS '(' id ')'
-                |
-
-<ifNotExists> ::= IF NOT EXISTS
-                | 
-
-<createTableList> ::= <createTableList> ',' <createTable>
-                    | <createTable>
-
-<createTable> ::= id id <createOpts>
-                | <createConstraint>
-                | <createUnique>
-                | <createPrimary>
-                | <createForeign>
-
-<createOpts> ::= <colOptionsList>
-            | 
-
-<createConstraint> ::= <constrName> CHECK '(' <expBoolCheck> ')'
-
-<createUnique> ::= UNIQUE '(' <idList> ')'
-
-<idList> ::= <idList> ',' id
-        | id
-
-<createPrimary> ::= PRIMARY KEY '(' <idList> ')'
-
-<createForeign> ::= FOREIGN KEY '(' <idList> ')' REFERENCES id '(' <idList> ')'
-
-<constrName> ::= CONSTRAINT id 
-            |
-
-<colOptionsList> ::= <colOptionsList> <colOptions>
-                | <colOptions>
-
-<colOptions> ::= <defaultVal>
-            | <nullOpt>
-            | <constraintOpt>
-            | <primaryOpt>
-            | <referencesOpt>
-
-<defaultVal> ::= DEFAULT <datatype>
-
-<nullOpt> ::= NOT NULL
-            | NULL
-
-<constraintOpt> ::= <constrName> UNIQUE
-                | <constrName> CHECK '(' <expBoolCheck> ')'
-
-<primaryOpt> ::= PRIMARY KEY
-
-<referencesOpt> ::= REFERENCES id
-
-<createOwner> ::= OWNER id
-                | OWNER '=' id
-                |
-
-<createMode> ::= MODE number
-             | MODE '=' number
-             |
-
-<showStmt> ::= SHOW DATABASES <likeOpt>
-
-<likeOpt> ::= LIKE regex
-            |
-
-<alterStmt> ::= ALTER DATABASE id <alterDb>
-            | ALTER TABLE id <alterTable>
-
-<alterDb> ::= RENAME TO id
-            | OWNER TO <ownerOPts>
-
-<ownerOPts> ::= id
-            | CURRENT_USER
-            | SESSION_USER
-
-<alterTable> ::= ADD <alterConstraint>
-            | <alterCol>
-            | DROP CONSTRAINT id
-            | DROP COLUMN id
-            | RENAME COLUMN id TO id
-
-<alterConstraint> ::= CHECK '(' <expBoolCheck> ')'
-                    | CONSTRAINT id UNIQUE '(' id ')'
-                    | <createForeign>
-                    | COLUMN id id
-
-<alterCol> ::= ALTER COLUMN id SET NOT NULL
-            | ALTER COLUMN id SET NULL
-
-<dropStmt> ::= DROP TABLE id
-            | DROP DATABASE <ifExists> id
-
-<ifExists> ::= IF EXISTS 
-            |
-
 <insertStmt> ::= INSERT INTO id VALUES '(' <paramList> ')'
 
 <updateStmt> ::= UPDATE id <optAlias> SET <updateCols> '=' <updateVals> <whereCl>
@@ -324,3 +337,16 @@
                 | DEFAULT
 
 <deleteStmt> ::= DELETE FROM id <optAlias> <whereCl>
+
+<truncateStmt> ::= TRUNCATE <tableOpt> id
+
+<tableOpt> ::= TABLE
+        | 
+
+/*Otros*/
+<showStmt> ::= SHOW DATABASES <likeOpt>
+
+<likeOpt> ::= LIKE regex
+            |
+
+<useStmt> ::= USE DATABSE id
