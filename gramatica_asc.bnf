@@ -51,6 +51,7 @@
 <extract> ::= EXTRACT '(' <optsExtract> FROM <timeStamp> ')'
 
 <timeStamp> ::= TIMESTAMP stringLit
+        | INTERVAL stringLit
 
 <optsExtract> ::= YEAR
                 | MONTH
@@ -59,7 +60,13 @@
                 | MINUTE
                 | SECOND
 
-<datePart> ::= DATE_PART '(' stringLit ',' INTERVAL stringLit ')'
+<datePart> ::= DATE_PART '(' stringLit ',' <dateSource> ')'
+
+<dateSource> ::= TIMESTAMP stringLit
+        | DATE stringLit
+        | TIME stringLit
+        | INTERVAL <intervalFields> stringLit
+        | NOW '(' ')'
 
 <current> ::= CURRENT_DATE
         | CURRENT_TIME
@@ -126,8 +133,8 @@
             | <datatype> NOT IN '(' <selectStmt> ')'
             | <expSubq>
 
-<expBool> ::= <expBool> AND <boolean>
-            | <expBool> OR <boolean>
+<expBool> ::= <expBool> AND <expBool>
+            | <expBool> OR <expBool>
             | NOT <expBool>
             | <boolean>
 
@@ -170,7 +177,35 @@
                 | <createForeign>
 
 <type> ::= id
-        | id '(' <literalList> ')'
+        | SMALLINIT
+        | INTEGER
+        | BIGINIT 
+        | DECIMAL
+        | NUMERIC
+        | REAL
+        | DOUBLE PRECISION
+        | MONEY
+        | CHARACTER VARYING <optParams>
+        | VARCHAR <optParams>
+        | CHARACTER <optParams>
+        | CHAR <optParams>
+        | TEXT
+        | <timeType>
+
+<timeType> ::= TIMESTAMP <optParams>
+        | DATE
+        | TIME <optParams>
+        | INTERVAL <intervalFields> <optParams>
+
+<intervalFields> ::= YEAR
+                | MONTH
+                | DAY
+                | HOUR
+                | MINUTE
+                | SECOND
+                |
+
+<optParams> ::= '(' <literalList> ')'
 
 <literalList> ::= <literalList> ',' <literal>
                 | <literal>
