@@ -1,5 +1,7 @@
 # Gramatica ascendente
+
 <hr style="background-color:#0477c9">
+
 ## Contenido
   - [Inicio de la gramatica](#inicio-de-la-gramatica)
   - [Expresiones](#expresiones)
