@@ -32,7 +32,7 @@
   - [Otros](#otros)
     - [Show](#show)
     - [Use](#use)
-    - 
+
 <hr style="background-color:#0477c9">
 
 ## Inicio de la gramatica
