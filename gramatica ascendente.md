@@ -1,4 +1,40 @@
 # Gramatica ascendente
+<hr style="background-color:#0477c9">
+## Contenido
+  - [Inicio de la gramatica](#inicio-de-la-gramatica)
+  - [Expresiones](#expresiones)
+    - [Expresiones con tipos](#expresiones-con-tipos)
+    - [Llamadas a funciones](#llamadas-a-funciones)
+    - [Literales](#literales)
+    - [Expresiones de comparacion](#expresiones-de-comparacion)
+    - [Expresiones de subqueries](#expresiones-de-subqueries)
+    - [Expresiones booleanas](#expresiones-booleanas)
+    - [Llamada a funcion](#llamada-a-funcion)
+  - [DDL](#ddl)
+    - [Create](#create)
+      - [Create Table](#create-table)
+      - [Create Database](#create-database)
+    - [Alter](#alter)
+      - [Alter Database](#alter-database)
+      - [Alter Table](#alter-table)
+    - [Drop](#drop)
+  - [DML](#dml)
+    - [Select](#select)
+      - [From](#from)
+      - [Joins](#joins)
+      - [Where](#where)
+      - [Group By](#group-by)
+      - [Order By](#order-by)
+      - [Limit](#limit)
+    - [Insert](#insert)
+    - [Update](#update)
+    - [Delete](#delete)
+  - [Otros](#otros)
+    - [Show](#show)
+    - [Use](#use)
+    - 
+<hr style="background-color:#0477c9">
+
 ## Inicio de la gramatica
         <stmtList> ::= <stmtList> <stmt>
                         | <stmt>
@@ -13,6 +49,8 @@
                 | <deleteStmt> ';'
                 | <truncateStmt> ';'
                 | <useStmt> ';'
+
+<hr style="background-color:#0477c9">
 
 ## Expresiones
         <expresion> ::= <datatype>
@@ -56,7 +94,7 @@
 
         <datePart> ::= DATE_PART '(' stringLit ',' INTERVAL stringLit ')'
 
-### Literales:
+### Literales
         <literal> ::= litBool
                 | litString
                 | litNum
@@ -125,7 +163,7 @@
                 | ANY
                 | SOME
 
-### Expresiones booleanas:
+### Expresiones booleanas
         <boolean> ::= <expComp>
                 | litBool
                 | EXISTS '(' <selectStmt> ')'
@@ -146,13 +184,15 @@
                 | NOT <expBoolCheck>
                 | <booleanCheck>
 
-### Llamada a funcion:
+### Llamada a funcion
         <funcCall> ::= funcMath '(' <paramList> ')'
                 | funcBool '(' <paramList> ')'
                 | funcTrig '(' <paramList> ')'
 
         <paramList> ::= <paramList> ',' <datatype>
                 | <datatype>
+
+<hr style="background-color:#0477c9">
 
 ## DDL
 
@@ -262,6 +302,8 @@
 
         <ifExists> ::= IF EXISTS 
                 |
+
+<hr style="background-color:#0477c9">
 
 ## DML
 ### Select
@@ -373,6 +415,8 @@
 
 ### Delete
         <deleteStmt> ::= DELETE FROM id <optAlias> <whereCl>
+
+<hr style="background-color:#0477c9">
 
 ## Otros
 ### Show
