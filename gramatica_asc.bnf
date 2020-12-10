@@ -18,12 +18,14 @@
 <expresion> ::= <datatype>
             | <expComp>
             | <expBool>
+            | '(' <selectStmt> ')'
 
 <datatype> ::=  <colName>
             | <literal>
             | <funcCall>
             | <extract>
             | <datePart>
+            | <current>
             | <datatype> '+' <datatype>
             | <datatype> '-' <datatype>
             | <datatype> '/' <datatype>
@@ -46,7 +48,9 @@
 <paramList> ::= <paramList> ',' <datatype>
             | <datatype>
 
-<extract> ::= EXTRACT '(' <optsExtract> FROM TIMESTAMP stringLit ')'
+<extract> ::= EXTRACT '(' <optsExtract> FROM <timeStamp> ')'
+
+<timeStamp> ::= TIMESTAMP stringLit
 
 <optsExtract> ::= YEAR
                 | MONTH
@@ -56,6 +60,10 @@
                 | SECOND
 
 <datePart> ::= DATE_PART '(' stringLit ',' INTERVAL stringLit ')'
+
+<current> ::= CURRENT_DATE
+        | CURRENT_TIME
+        | <timeStamp>
 
 <expComp> ::= <datatype> '<' <datatype>
             | <datatype> '>' <datatype>
@@ -155,11 +163,17 @@
 <createTableList> ::= <createTableList> ',' <createTable>
                     | <createTable>
 
-<createTable> ::= id id <createOpts>
+<createTable> ::= id <type> <createOpts>
                 | <createConstraint>
                 | <createUnique>
                 | <createPrimary>
                 | <createForeign>
+
+<type> ::= id
+        | id '(' <literalList> ')'
+
+<literalList> ::= <literalList> ',' <literal>
+                | <literal>
 
 <createOpts> ::= <colOptionsList>
             | 
@@ -208,7 +222,7 @@
              |
 
 <alterStmt> ::= ALTER DATABASE id <alterDb>
-            | ALTER TABLE id <alterTable>
+            | ALTER TABLE id <alterTableList>
 
 <alterDb> ::= RENAME TO id
             | OWNER TO <ownerOPts>
@@ -216,6 +230,9 @@
 <ownerOPts> ::= id
             | CURRENT_USER
             | SESSION_USER
+
+<alterTableList> ::= <alterTableList> ',' <alterTable>
+                | <alterTable>
 
 <alterTable> ::= ADD <alterConstraint>
             | <alterCol>
@@ -226,10 +243,11 @@
 <alterConstraint> ::= CHECK '(' <expBoolCheck> ')'
                     | CONSTRAINT id UNIQUE '(' id ')'
                     | <createForeign>
-                    | COLUMN id id
+                    | COLUMN id <type>
 
 <alterCol> ::= ALTER COLUMN id SET NOT NULL
             | ALTER COLUMN id SET NULL
+            | ALTER COLUMN id TYPE <type>
 
 <dropStmt> ::= DROP TABLE id
             | DROP DATABASE <ifExists> id
