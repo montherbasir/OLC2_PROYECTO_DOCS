@@ -36,7 +36,7 @@
             | <datatype> '&' <datatype>
             | <datatype> '|' <datatype>
             | <datatype> '#' <datatype>
-            | <datatype> '~' <datatype>
+            | '~' <datatype>
             | <datatype> '>>' <datatype>
             | <datatype> '<<' <datatype>
             | '(' <datatype> ')'
@@ -82,7 +82,7 @@
             | <datatype> BETWEEN <datatype> AND <datatype>
             | <datatype> NOT BETWEEN <datatype> AND <datatype>
             | <datatype> BETWEEN SYMMETRIC <datatype> AND <datatype>
-            | <datatype> IS DISTINCT FFROM <datatype>
+            | <datatype> IS DISTINCT FROM <datatype>
             | <datatype> IS NOT DISTINCT FROM <datatype>
             | <datatype> IS NULL
             | <datatype> IS NOT NULL
@@ -366,8 +366,8 @@
             | NULL LAST
             |
 
-<limitCl> ::= number <offsetLimit>
-            | ALL <offsetLimit>
+<limitCl> ::= LIMIT number <offsetLimit>
+            | LIMIT ALL <offsetLimit>
             |
 
 <offsetLimit> ::= OFFSET number
