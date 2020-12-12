@@ -141,8 +141,8 @@
 <booleanCheck> ::= <expComp>
             | litBool
 
-<expBoolCheck> ::= <expBoolCheck> AND <booleanCheck>
-            | <expBoolCheck> OR <booleanCheck>
+<expBoolCheck> ::= <expBoolCheck> AND <expBoolCheck>
+            | <expBoolCheck> OR <expBoolCheck>
             | NOT <expBoolCheck>
             | <booleanCheck>
 

@@ -1,0 +1,403 @@
+stmtList : stmtList stmt
+                | stmt
+
+stmt : selectStmt ';'
+        | createStmt ';'
+        | showStmt ';'
+        | alterStmt ';'
+        | dropStmt ';'
+        | insertStmt ';'
+        | updateStmt ';'
+        | deleteStmt ';'
+        | truncateStmt ';'
+        | useStmt ';'
+
+/*Expresiones*/
+expresion : datatype
+            | expComp
+            | expBool
+            | '(' selectStmt ')'
+
+datatype :  colName
+            | literal
+            | funcCall
+            | extract
+            | datePart
+            | current
+            | datatype '+' datatype
+            | datatype '-' datatype
+            | datatype '/' datatype
+            | datatype '*' datatype 
+            | datatype '%' datatype
+            | datatype '^' datatype
+            | datatype '||' datatype
+            | datatype '&' datatype
+            | datatype '|' datatype
+            | datatype '#' datatype
+            | '~' datatype
+            | datatype '>>' datatype
+            | datatype '<<' datatype
+            | '(' datatype ')'
+
+funcCall : funcMath '(' paramList ')'
+            | funcBool '(' paramList ')'
+            | funcTrig '(' paramList ')'
+
+paramList : paramList ',' datatype
+            | datatype
+
+extract : R_EXTRACT '(' optsExtract R_FROM timeStamp ')'
+
+timeStamp : R_TIMESTAMP stringLit
+        | R_INTERVAL stringLit
+
+optsExtract : R_YEAR
+                | R_MONTH
+                | R_DAY
+                | R_HOUR 
+                | R_MINUTE
+                | R_SECOND
+
+datePart : DATE_PART '(' stringLit ',' dateSource ')'
+
+dateSource : R_TIMESTAMP stringLit
+        | R_DATE stringLit
+        | R_TIME stringLit
+        | R_INTERVAL intervalFields stringLit
+        | R_NOW '(' ')'
+
+current : CURRENT_DATE
+        | CURRENT_TIME
+        | timeStamp
+
+expComp : datatype '<' datatype
+            | datatype '>' datatype
+            | datatype '>=' datatype
+            | datatype '<=' datatype
+            | datatype '=' datatype
+            | datatype '!=' datatype
+            | datatype '<>' datatype
+            | datatype R_BETWEEN datatype R_AND datatype
+            | datatype R_NOT R_BETWEEN datatype R_AND datatype
+            | datatype R_BETWEEN R_SYMMETRIC datatype R_AND datatype
+            | datatype R_IS R_DISTINCT R_FROM datatype
+            | datatype R_IS R_NOT R_DISTINCT R_FROM datatype
+            | datatype R_IS R_NULL
+            | datatype R_IS R_NOT R_NULL
+            | datatype R_ISNULL
+            | datatype R_NOTNULL
+            | datatype R_IS R_TRUE
+            | datatype R_IS R_NOT R_TRUE
+            | datatype R_IS R_FALSE
+            | datatype R_IS R_NOT R_FALSE
+            | datatype R_IS R_UNKNOWN
+            | datatype R_IS R_NOT R_UNKNOWN
+
+expSubq : datatype '<'  subqValues '(' selectStmt ')'
+            | datatype '>'  subqValues '(' selectStmt ')'
+            | datatype '>=' subqValues '(' selectStmt ')'
+            | datatype '=' subqValues '(' selectStmt ')'
+            | datatype '='  subqValues '(' selectStmt ')'
+            | datatype '!=' subqValues '(' selectStmt ')'
+            | datatype '<>' subqValues '(' selectStmt ')'
+            | datatype R_BETWEEN datatype R_AND datatype subqValues '(' selectStmt ')'
+            | datatype R_NOT R_BETWEEN datatype R_AND datatype subqValues '(' selectStmt ')'
+            | datatype R_BETWEEN R_SYMMETRIC datatype R_AND datatype subqValues '(' selectStmt ')'
+            | datatype R_IS R_DISTINCT R_FFROM datatype subqValues '(' selectStmt ')'
+            | datatype R_IS R_NOT R_DISTINCT R_FROM datatype subqValues '(' selectStmt ')'
+            | datatype R_IS R_NULL subqValues '(' selectStmt ')'
+            | datatype R_IS R_NOT R_NULL subqValues '(' selectStmt ')'
+            | datatype R_ISNULL subqValues '(' selectStmt ')'
+            | datatype R_NOTNULL subqValues '(' selectStmt ')'
+            | datatype R_IS R_TRUE subqValues '(' selectStmt ')'
+            | datatype R_IS R_NOT R_TRUE subqValues '(' selectStmt ')'
+            | datatype R_IS R_FALSE subqValues '(' selectStmt ')'
+            | datatype R_IS R_NOT R_FALSE subqValues '(' selectStmt ')'
+            | datatype R_IS R_UNKNOWN subqValues '(' selectStmt ')'
+            | datatype R_IS R_NOT R_UNKNOWN subqValues '(' selectStmt ')'
+            | stringExp R_LIKE pattern 
+
+stringExp : stringLit
+        | colName
+
+subqValues : R_ALL
+                | R_ANY
+                | R_SOME
+
+boolean : expComp
+            | litBool
+            | R_EXISTS '(' selectStmt ')'
+            | datatype R_IN '(' selectStmt ')'
+            | datatype R_NOT R_IN '(' selectStmt ')'
+            | expSubq
+
+expBool : expBool R_AND expBool
+            | expBool R_OR expBool
+            | R_NOT expBool
+            | boolean
+
+booleanCheck : expComp
+            | litBool
+
+expBoolCheck : expBoolCheck R_AND expBoolCheck
+            | expBoolCheck R_OR expBoolCheck
+            | R_NOT expBoolCheck
+            | booleanCheck
+
+literal : litBool
+            | litString
+            | litNum
+            | litChar
+
+/*R_DDL*/
+createStmt : R_CREATE createBody
+
+createBody : R_OR R_REPLACE createOpts
+             | createOpts
+
+createOpts : R_TABLE ifNotExists id '(' createTableList ')' inheritsOpt
+            | R_DATABASE ifNotExists id createOwner createMode
+            | R_TYPE ifNotExists id R_AS R_ENUM '(' paramList ')'
+
+inheritsOpt : R_INHERITS '(' id ')'
+                |
+
+ifNotExists : R_IF R_NOT R_EXISTS
+                | 
+
+createTableList : createTableList ',' createTable
+                    | createTable
+
+createTable : id type createOpts
+                | createConstraint
+                | createUnique
+                | createPrimary
+                | createForeign
+
+type : id
+        | R_SMALLINIT
+        | R_INTEGER
+        | R_BIGINIT 
+        | R_DECIMAL
+        | R_NUMERIC
+        | R_REAL
+        | R_DOUBLE R_PRECISION
+        | R_MONEY
+        | R_CHARACTER R_VARYING optParams
+        | R_VARCHAR optParams
+        | R_CHARACTER optParams
+        | R_CHAR optParams
+        | R_TEXT
+        | timeType
+
+timeType : R_TIMESTAMP optParams
+        | R_DATE
+        | R_TIME optParams
+        | R_INTERVAL intervalFields optParams
+
+intervalFields : R_YEAR
+                | R_MONTH
+                | R_DAY
+                | R_HOUR
+                | R_MINUTE
+                | R_SECOND
+                |
+
+optParams : '(' literalList ')'
+
+literalList : literalList ',' literal
+                | literal
+
+createOpts : colOptionsList
+            | 
+
+createConstraint : constrName R_CHECK '(' expBoolCheck ')'
+
+createUnique : R_UNIQUE '(' idList ')'
+
+idList : idList ',' id
+        | id
+
+createPrimary : R_PRIMARY R_KEY '(' idList ')'
+
+createForeign : R_FOREIGN R_KEY '(' idList ')' R_REFERENCES id '(' idList ')'
+
+constrName : R_CONSTRAINT id 
+            |
+
+colOptionsList : colOptionsList colOptions
+                | colOptions
+
+colOptions : defaultVal
+            | nullOpt
+            | constraintOpt
+            | primaryOpt
+            | referencesOpt
+
+defaultVal : R_DEFAULT datatype
+
+nullOpt : R_NOT R_NULL
+            | R_NULL
+
+constraintOpt : constrName R_UNIQUE
+                | constrName R_CHECK '(' expBoolCheck ')'
+
+primaryOpt : R_PRIMARY R_KEY
+
+referencesOpt : R_REFERENCES id
+
+createOwner : R_OWNER id
+                | R_OWNER '=' id
+                |
+
+createMode : R_MODE number
+             | R_MODE '=' number
+             |
+
+alterStmt : R_ALTER R_DATABASE id alterDb
+            | R_ALTER R_TABLE id alterTableList
+
+alterDb : R_RENAME R_TO id
+            | R_OWNER R_TO ownerOPts
+
+ownerOPts : id
+            | R_CURRENT_USER
+            | R_SESSION_USER
+
+alterTableList : alterTableList ',' alterTable
+                | alterTable
+
+alterTable : R_ADD alterConstraint
+            | alterCol
+            | R_DROP R_CONSTRAINT id
+            | R_DROP R_COLUMN id
+            | R_RENAME R_COLUMN id R_TO id
+
+alterConstraint : R_CHECK '(' expBoolCheck ')'
+                    | R_CONSTRAINT id R_UNIQUE '(' id ')'
+                    | createForeign
+                    | R_COLUMN id type
+
+alterCol : R_ALTER R_COLUMN id R_SET R_NOT R_NULL
+            | R_ALTER R_COLUMN id R_SET R_NULL
+            | R_ALTER R_COLUMN id R_TYPE type
+
+dropStmt : R_DROP R_TABLE id
+            | R_DROP R_DATABASE ifExists id
+
+ifExists : R_IF R_EXISTS 
+            |
+
+/*R_DML*/
+selectStmt : R_SELECT selectParams R_FROM tableExp joinList whereCl groupByCl orderByCl limitCl
+            | R_SELECT R_DISTINCT selectParams R_FROM tableExp whereCl groupByCl
+            | selectStmt R_UNION allOpt selectStmt
+            | selectStmt R_INTERSECT allOpt selectStmt
+            | selectStmt R_EXCEPT allOpt selectStmt
+            | '(' selectStmt ')'
+
+allOpt : R_ALL
+            |
+
+selectParams : '*'
+                | selectList
+
+selectList : selectList ',' expresion optAlias
+            | expresion optAlias
+
+optAlias : R_AS id
+            | id
+            |
+
+tableExp : tableExp ',' fromBody optAlias
+            | fromBody optAlias
+
+colName : id
+            | id.id
+
+fromBody : colName
+            | '(' selectStmt ')'
+
+joinList : joinList joinCl
+            | joinCl
+
+joinCl : joinOpt R_JOIN colName R_ON expBool
+        | joinOpt R_JOIN colName R_USING '(' nameList ')'
+        | R_NATURAL joinOpt R_JOIN colName
+        |
+
+nameList : nameList ',' colName
+            | colName
+
+joinOpt : R_INNER
+            | R_LEFT 
+            | R_LEFT R_OUTER
+            | R_RIGHT
+            | R_RIGHT R_OUTER
+            | R_FULL
+            | R_FULL R_OUTER
+
+whereCl : R_WHERE expBool
+            | /*epsilon*/
+
+groupByCl : R_GROUP R_BY groupList havingCl
+            | 
+
+groupList :  groupList ',' colName
+            | groupElem
+
+havingCl : R_HAVING expBool
+            |
+
+orderByCl : R_ORDER R_BY orderList
+
+orderList : orderList ',' orderByElem
+            | orderByElem
+
+orderByElem : colName orderOpts orderNull
+
+orderOpts : R_ASC
+            | R_DESC
+            |
+
+orderNull : R_NULL R_FIRST
+            | R_NULL R_LAST
+            |
+
+limitCl : R_LIMIT number offsetLimit
+            | R_LIMIT R_ALL offsetLimit
+            |
+
+offsetLimit : R_OFFSET number
+                |
+
+insertStmt : R_INSERT R_INTO id R_VALUES '(' paramList ')'
+
+updateStmt : R_UPDATE id optAlias R_SET updateCols '=' updateVals whereCl
+
+updateCols : id
+                | '(' idList ')'
+
+updateVals : updateExp
+                | '(' updateList ')'
+
+updateList : updateList ',' updateExp
+                | updateExp
+
+updateExp : datatype
+                | R_DEFAULT
+
+deleteStmt : R_DELETE R_FROM id optAlias whereCl
+
+truncateStmt : R_TRUNCATE tableOpt id
+
+tableOpt : R_TABLE
+        | 
+
+/*Otros*/
+showStmt : R_SHOW R_DATABASES likeOpt
+
+likeOpt : R_LIKE regex
+            |
+
+useStmt : R_USE R_DATABSE id
