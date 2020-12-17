@@ -513,7 +513,6 @@ def p_current_1(t):
     t[0] = expression.Current(t[1][0], t[1][1], 0, 0)
 
 
-
 def p_literal_list(t):
     """literalList : literalList S_COMA literal"""
     t[1].append(t[3].execute(0).value)
@@ -1216,16 +1215,21 @@ def p_useStmt(t):
 # endregion
 
 
+listErrors=list()
+
 def p_error(t):
     try:
-        print(t)
-        print("Error sintáctico en '%s'" % t.value)
+        """ print(t)
+        print("Error sintáctico en '%s'" % t.value) """
+        listErrors.insert(len(listErrors),["Error sintáctico en '%s'" % t.value,t.lineno])
     except AttributeError:
         print("end of file")
 
 
 parser = yacc.yacc()
 
+def returnSintacticErrors():
+    return listErrors
 
 def parse(input):
     try:
